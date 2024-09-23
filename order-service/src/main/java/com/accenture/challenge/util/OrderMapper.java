@@ -34,7 +34,6 @@ public class OrderMapper {
         }
 
         Order order = new Order();
-        order.setId(orderDto.getId());
         order.setCustomerId(orderDto.getCustomerId());
         order.setOrderAmount(orderDto.getOrderAmount());
         order.setOrderItems(orderDto.getOrderItems());
