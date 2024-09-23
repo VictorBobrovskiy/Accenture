@@ -1,13 +1,10 @@
 package com.accenture.orderprocessingservice;
 
 
-import com.accenture.challenge.model.Order;
-import com.accenture.challenge.model.OrderStatus;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.security.oauthbearer.internals.secured.ValidateException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Random;
@@ -15,18 +12,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@RequiredArgsConstructor
 public class OrderProcessingService {
 
     private final Random random = new Random();
 
     private final Map<Long, Order> orderStorage = new ConcurrentHashMap<>();
 
-    private final KafkaOrderProducerService kafkaOrderProducerService;
+    private final KafkaOrderProducer kafkaOrderProducer;
 
-    @Autowired
-    public OrderProcessingService(KafkaOrderProducerService kafkaOrderProducerService) {
-        this.kafkaOrderProducerService = kafkaOrderProducerService;
-    }
 
     // Process the order by validating it and recalculating the price.
      public void processOrder(Order order) {
@@ -43,6 +37,8 @@ public class OrderProcessingService {
              // If everything is successful, mark the order as COMPLETED
              order.setStatus(OrderStatus.COMPLETED);
 
+             orderStorage.putIfAbsent(order.getId(), order);
+
          } catch (Exception e) {
              // In case of any failure, mark the order as FAILED
              order.setStatus(OrderStatus.FAILED);
@@ -58,7 +54,7 @@ public class OrderProcessingService {
 
          // Send the processed order back to Kafka
          try {
-             kafkaOrderProducerService.sendProcessedOrder(order);
+             kafkaOrderProducer.sendProcessedOrder(order);
          } catch (Exception e) {
              throw new RuntimeException("Failed to send processed order to Kafka", e);
          }
@@ -78,7 +74,7 @@ public class OrderProcessingService {
 
         BigDecimal totalAmount = order.getOrderItems().stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.TWO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // Simulate applying a random discount
         BigDecimal discount = BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(0, 0.1));

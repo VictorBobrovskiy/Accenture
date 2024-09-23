@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  app:
-    build: ..
+  order-service:
+    build: ./order-service
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/orderdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/accenture
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_DATASOURCE_PASSWORD=321
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
@@ -16,13 +16,21 @@ services:
       - db
       - kafka
       - redis
+  order-processing-service:
+    build: ./order-processing-service
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    depends_on:
+      - kafka
 
   db:
-    image: postgres:13
+    image: postgres:15
     environment:
-      - POSTGRES_DB=orderdb
+      - POSTGRES_DB=accenture
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=321
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

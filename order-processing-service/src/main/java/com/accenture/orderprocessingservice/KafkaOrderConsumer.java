@@ -1,19 +1,21 @@
 package com.accenture.orderprocessingservice;
 
-import com.accenture.challenge.model.Order;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class KafkaOrderConsumerService {
+@RequiredArgsConstructor
+public class KafkaOrderConsumer {
 
     private static final String ORDER_TOPIC = "order_topic";
 
-    private OrderProcessingService orderProcessingService;
+    private final OrderProcessingService orderProcessingService;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = ORDER_TOPIC, groupId = "processing-group")
     public void consumeOrder(String orderJson) throws JsonProcessingException {

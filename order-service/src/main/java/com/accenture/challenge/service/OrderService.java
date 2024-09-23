@@ -10,8 +10,10 @@ public interface OrderService {
 
     CompletableFuture<Order> processOrder(Order order);
 
-    Order getOrderById(Long orderId);
+    Order getOrderById(long orderId);
 
-    List<OrderItem> getOrderItemsByOrderId(String orderId);
+    List<OrderItem> getOrderItemsByOrderId(long orderId);
+
+    List<Order> getAllOrders();
 
 }

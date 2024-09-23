@@ -3,6 +3,7 @@ package com.accenture.challenge.dto;
 import com.accenture.challenge.model.OrderItem;
 import com.accenture.challenge.model.OrderStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import java.util.List;
 @Schema(description = "DTO representing an Order")
 public class OrderDto {
 
+    @Nullable
     @Schema(description = "Unique identifier of the order", example = "1")
     private Long id;
 
@@ -32,8 +34,17 @@ public class OrderDto {
     @Schema(description = "List of items in the order", example = "[\"item1\", \"item2\"]")
     private List<OrderItem> orderItems;
 
-    @NotNull
     @Schema(description = "Current status of the order", example = "PROCESSING")
     private OrderStatus status;
 
+    @Override
+    public String toString() {
+        return "OrderDto{" +
+                "id=" + id +
+                ", customerId=" + customerId +
+                ", orderAmount=" + orderAmount +
+                ", orderItems=" + orderItems +
+                ", status=" + status +
+                '}';
+    }
 }

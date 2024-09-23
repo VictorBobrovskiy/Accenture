@@ -1,18 +1,20 @@
 package com.accenture.orderprocessingservice;
 
-import com.accenture.challenge.model.Order;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class KafkaOrderProducerService {
+@RequiredArgsConstructor
+public class KafkaOrderProducer {
     private static final String PROCESSED_ORDER_TOPIC = "processed_order_topic";
 
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public void sendProcessedOrder(Order order) throws JsonProcessingException {
 
