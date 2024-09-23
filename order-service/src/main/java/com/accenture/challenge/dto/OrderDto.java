@@ -21,16 +21,16 @@ public class OrderDto {
     @Schema(description = "Unique identifier of the order", example = "1")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "Enter valid customer id")
     @Schema(description = "Customer's unique identifier", example = "12345")
     private Long customerId;
 
-    @NotNull
+    @NotNull(message = "Enter order amount")
     @Positive
     @Schema(description = "Total amount of the order", example = "99.99")
     private BigDecimal orderAmount;
 
-    @NotNull
+    @NotNull(message = "Enter items for the order")
     @Schema(description = "List of items in the order", example = "[\"item1\", \"item2\"]")
     private List<OrderItem> orderItems;
 

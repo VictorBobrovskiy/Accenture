@@ -45,16 +45,16 @@ public class OrderController {
     })
     public CompletableFuture<ResponseEntity<OrderDto>> processOrder(@Valid @RequestBody OrderDto orderDto) {
 
-        log.debug("Recibido el pedido para procesar: {}", orderDto);
+        log.debug("Recibido el pedido para procesar: {}", orderDto);  // Log indicando que se ha recibido el pedido
 
         return orderService.processOrder(OrderMapper.toEntity(orderDto))
                 .thenApply(processedOrder -> {
                     if (processedOrder == null) {
-                        log.error("Error al procesar el pedido, el resultado es nulo.");
+                        log.error("Error al procesar el pedido, el resultado es nulo.");  // Log en caso de error
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(null);
                     }
-                    log.info("Pedido procesado exitosamente: {}", processedOrder);
+                    log.info("Pedido procesado exitosamente: {}", processedOrder);  // Log indicando éxito
                     return ResponseEntity.ok()
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(OrderMapper.toDto(processedOrder));
@@ -76,15 +76,15 @@ public class OrderController {
     })
     public ResponseEntity<OrderDto> getOrder(@PathVariable Long orderId) {
 
-        log.debug("Recuperando el pedido con ID: {}", orderId);
+        log.debug("Recuperando el pedido con ID: {}", orderId);  // Log indicando que se está intentando recuperar el pedido
 
         Order order = orderService.getOrderById(orderId);
 
-        order.setOrderItems(orderService.getOrderItemsByOrderId(orderId));
+        order.setOrderItems(orderService.getOrderItemsByOrderId(orderId));  // Asignar los artículos del pedido
 
         OrderDto orderDto = OrderMapper.toDto(order);
 
-        log.info("Pedido con ID {} recuperado exitosamente.", orderId);
+        log.info("Pedido con ID {} recuperado exitosamente.", orderId);  // Log indicando que se recuperó el pedido
 
         return new ResponseEntity<>(orderDto, HttpStatus.OK);
     }
@@ -101,16 +101,16 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<List<OrderDto>> getAllOrders() {
-        log.debug("Recuperando todos los pedidos...");
+        log.debug("Recuperando todos los pedidos...");  // Log indicando el inicio de la recuperación de todos los pedidos
 
         List<Order> orders = orderService.getAllOrders();
 
         if (orders.isEmpty()) {
-            log.warn("No se encontraron pedidos.");
+            log.warn("No se encontraron pedidos.");  // Log en caso de no encontrar pedidos
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        // Set OrderItems for each Order
+        // Asignar los OrderItems a cada pedido
         orders.forEach(order -> {
             List<OrderItem> orderItems = orderService.getOrderItemsByOrderId(order.getId());
             order.setOrderItems(orderItems);
@@ -120,7 +120,7 @@ public class OrderController {
                 .map(OrderMapper::toDto)
                 .collect(Collectors.toList());
 
-        log.debug("Pedidos recuperados exitosamente.");
+        log.debug("Pedidos recuperados exitosamente.");  // Log indicando el éxito en la recuperación de los pedidos
         return new ResponseEntity<>(orderDtos, HttpStatus.OK);
     }
 }

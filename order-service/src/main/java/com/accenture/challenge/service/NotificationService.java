@@ -7,5 +7,7 @@ public class NotificationService {
 
     public void notify(Long userId) {
         System.out.println("Your order is completed");
-    };
+    }
+
+    ;
 }
