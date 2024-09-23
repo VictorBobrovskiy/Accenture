@@ -25,18 +25,19 @@ public class KafkaOrderConsumerService {
 
     @KafkaListener(topics = PROCESSED_ORDER_TOPIC, groupId = "order-group")
     public void consumeProcessedOrder(String orderJson) {
+        Order processedOrder;
         try {
-            Order processedOrder = objectMapper.readValue(orderJson, Order.class);
-            // Logic to update the order in the database
-            updateOrder(processedOrder);
-            // Sending notification to the customer
-            notificationService.notify(processedOrder.getCustomerId());
-            // Publish to Redis cache
-            redisTemplate.opsForValue().set(processedOrder.getId().toString(), processedOrder);
-
+            processedOrder = objectMapper.readValue(orderJson, Order.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error processing JSON from Kafka", e);
         }
+
+        // Logic to update the order in the database
+        updateOrder(processedOrder);
+        // Sending notification to the customer
+        notificationService.notify(processedOrder.getCustomerId());
+        // Publish to Redis cache
+        redisTemplate.opsForValue().set(processedOrder.getId().toString(), processedOrder);
     }
 
     private void updateOrder(Order processedOrder) {
